@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+
+  "name": "${name}",
+  "description": "${description}",
+  "authors": [
+    "cc_cece"
+  ],
+  "contact": {
+    "email": "cc_cece@outlook.com"
+  },
+  "license": "GPL-3.0-only",
+  "icon": "assets/${id}/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "${group}.Pullup"
+    ],
+    "client": [
+      "${group}.client.PullupClient"
+    ]
+  },
+  "mixins": [
+    "pullup.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": ">=${fabricVersion}",
+    "minecraft": "${minecraftVersion == '1.20.1' ? '*' : '>=' + minecraftVersion}"
+  }
+}
