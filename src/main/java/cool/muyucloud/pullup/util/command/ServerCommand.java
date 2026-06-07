@@ -39,7 +39,11 @@ public class ServerCommand {
 
     private static LiteralArgumentBuilder<ServerCommandSource> buildRoot(String rootName) {
         LiteralArgumentBuilder<ServerCommandSource> root = CommandManager.literal(rootName)
+            /*? if >=1.21.11 {*/
+            .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK));
+            /*?} else {*/
             .requires(source -> source.hasPermissionLevel(2));
+            /*?}*/
 
         root.then(buildLoad());
         root.then(buildCloud());
@@ -251,7 +255,7 @@ public class ServerCommand {
     }
 
     private static void sendFeedback(ServerCommandSource source, MutableText text, boolean broadcastToOps) {
-        /*? if <=1.18.2 {*/
+        /*? if <=1.19.4 {*/
         /*source.sendFeedback(text, broadcastToOps);*/
         /*?} else {*/
         source.sendFeedback(() -> text, broadcastToOps);

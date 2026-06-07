@@ -13,10 +13,12 @@ import java.util.List;
 
 /*? if <26.1 {*/
 import cool.muyucloud.pullup.access.ClientPlayerEntityAccess;
-/*? if <=1.18.2 {*/
+/*? if fabric && <=1.19.4 || forge && <=1.19.4 {*/
 /*import net.minecraft.client.util.math.MatrixStack;*/
 /*?} else {*/
+/*? if fabric && >=1.20.1 || forge && >=1.20.1 || neoforge {*/
 import net.minecraft.client.gui.DrawContext;
+/*?}*/
 /*?}*/
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -77,7 +79,7 @@ public final class PullupHudRenderer {
         /*? if >=26.1 {*/
         /*HudElementRegistry.addLast(FABRIC_ELEMENT_ID, (guiGraphics, deltaTracker) -> renderModern(guiGraphics));*/
         /*?} else {*/
-        /*? if <=1.18.2 {*/
+        /*? if <=1.19.4 {*/
         /*HudRenderCallback.EVENT.register((matrices, tickDelta) -> renderLegacy118(matrices));*/
         /*?} else {*/
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> renderLegacy(drawContext));
@@ -102,7 +104,13 @@ public final class PullupHudRenderer {
     }*/
     /*?}*/
 
-    /*? if forge && >1.18.2 && <26.1 {*/
+    /*? if forge && >1.18.2 && <=1.19.4 {*/
+    /*public static void onForgeLegacyRender(RenderGuiEvent.Post event) {
+        renderLegacy118(event.getPoseStack());
+    }*/
+    /*?}*/
+
+    /*? if forge && >=1.20.1 && <26.1 {*/
     /*public static void onForgeLegacyRender(RenderGuiEvent.Post event) {
         renderLegacyModern(event.getGuiGraphics());
     }*/
@@ -114,7 +122,7 @@ public final class PullupHudRenderer {
     }*/
     /*?}*/
 
-    /*? if <26.1 && <=1.18.2 {*/
+    /*? if <26.1 && (fabric && <=1.19.4 || forge && <=1.19.4) {*/
     /*private static void renderLegacy118(MatrixStack matrices) {
         LegacyHudContext context = createLegacyContext();
         if (context == null) {
@@ -134,7 +142,7 @@ public final class PullupHudRenderer {
     }*/
     /*?}*/
 
-    /*? if fabric && <26.1 && >1.18.2 {*/
+    /*? if fabric && <26.1 && >=1.20.1 {*/
     private static void renderLegacy(DrawContext drawContext) {
         LegacyHudContext context = createLegacyContext();
         if (context == null) {
@@ -145,7 +153,7 @@ public final class PullupHudRenderer {
     }
     /*?}*/
 
-    /*? if <26.1 && >1.18.2 {*/
+    /*? if <26.1 && (forge && >=1.20.1 || neoforge) {*/
     /*private static void renderLegacyModern(DrawContext drawContext) {
         LegacyHudContext context = createLegacyContext();
         if (context == null) {
@@ -156,7 +164,7 @@ public final class PullupHudRenderer {
     }*/
     /*?}*/
 
-    /*? if <26.1 && >1.18.2 {*/
+    /*? if <26.1 && (fabric && >=1.20.1 || forge && >=1.20.1 || neoforge) {*/
     private static void renderLegacyTexts(DrawContext drawContext, LegacyHudContext context) {
         if (context.hudTexts().isEmpty()) {
             return;

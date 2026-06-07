@@ -75,6 +75,7 @@ public class Pullup implements ModInitializer {
 
     /*? if neoforge {*/
     /*? if <26.1 {*/
+    /*? if <1.20.6 {*/
     /*public Pullup(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         bootstrap();
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onServerStoppingEvent);
@@ -85,6 +86,43 @@ public class Pullup implements ModInitializer {
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onNeoForgeClientTickLegacy);
         }
     }*/
+    /*?}*/
+    /*? if >=1.20.6 && <1.21 {*/
+    /*public Pullup(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        bootstrap();
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onServerStoppingEvent);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.adapter.client.PullupHudRenderer::onNeoForgeLegacyRender);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.util.command.ClientCommand::registerNeoForgeClientCommands);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onNeoForgeClientTickLegacy);
+        }
+    }*/
+    /*?}*/
+    /*? if >=1.21 && <1.21.11 {*/
+    /*public Pullup(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        bootstrap();
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onServerStoppingEvent);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT) {
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.adapter.client.PullupHudRenderer::onNeoForgeLegacyRender);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.util.command.ClientCommand::registerNeoForgeClientCommands);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onNeoForgeClientTickLegacy);
+        }
+    }*/
+    /*?}*/
+    /*? if >=1.21.11 {*/
+    /*public Pullup(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        bootstrap();
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onServerStoppingEvent);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        if (net.neoforged.fml.loading.FMLEnvironment.getDist() == net.neoforged.api.distmarker.Dist.CLIENT) {
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.adapter.client.PullupHudRenderer::onNeoForgeLegacyRender);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cool.muyucloud.pullup.util.command.ClientCommand::registerNeoForgeClientCommands);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::onNeoForgeClientTickLegacy);
+        }
+    }*/
+    /*?}*/
     /*?}*/
     /*? if >=26.1 {*/
         /*public Pullup(net.neoforged.bus.api.IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
@@ -209,11 +247,17 @@ public class Pullup implements ModInitializer {
     }*/
     /*?}*/
     /*? if <26.1 {*/
+    /*? if >=1.20.6 {*/
+    /*private void onNeoForgeClientTickLegacy(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
+        cool.muyucloud.pullup.adapter.client.ConditionManagerScreen.openIfRequested();
+    }*/
+    /*?} else {*/
     /*private void onNeoForgeClientTickLegacy(net.neoforged.neoforge.event.TickEvent.ClientTickEvent event) {
         if (event.phase == net.neoforged.neoforge.event.TickEvent.Phase.END) {
             cool.muyucloud.pullup.adapter.client.ConditionManagerScreen.openIfRequested();
         }
     }*/
+    /*?}*/
     /*?}*/
     /*? if >=26.1 {*/
     /*private void onClientTick26(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {

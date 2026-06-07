@@ -93,14 +93,14 @@ public class Registry<T> {
         });
     }
 
-    private final HashMap<Identifier, T> registries = new HashMap<>();
+    private final HashMap<String, T> registries = new HashMap<>();
 
     public void register(Identifier id, T content) {
-        this.registries.put(id, content);
+        this.registries.put(normalize(id), content);
     }
 
     public T get(Identifier name) {
-        return this.registries.get(name);
+        return this.registries.get(normalize(name));
     }
 
     /**
@@ -116,6 +116,10 @@ public class Registry<T> {
     }
 
     public boolean has(Identifier id) {
-        return this.registries.containsKey(id);
+        return this.registries.containsKey(normalize(id));
+    }
+
+    private static String normalize(Identifier id) {
+        return id == null ? "" : id.toString();
     }
 }

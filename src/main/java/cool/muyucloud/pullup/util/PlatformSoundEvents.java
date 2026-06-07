@@ -12,7 +12,7 @@ public final class PlatformSoundEvents {
     private PlatformSoundEvents() {}
 
     public static SoundEvent create(Identifier id) {
-        /*? if <=1.18.2 {*/
+        /*? if <=1.19.2 {*/
         /*return new SoundEvent(id);*/
         /*?} else {*/
         /*? if >=26.1 {*/

@@ -7,6 +7,10 @@ public final class PullupNetworking {
 
     public static void registerReceivers() {
         /*? if fabric {*/
+        /*? if >=1.20.6 {*/
+        /*PullupNetworkS2C.registerPayloadTypes();
+        PullupNetworkC2S.registerPayloadTypes();*/
+        /*?}*/
         PullupNetworkS2C.registerReceive();
         PullupNetworkC2S.registerReceive();
         /*?}*/

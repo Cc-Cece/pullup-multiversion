@@ -42,11 +42,6 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
     public abstract float getYaw(float tickDelta);
 
     @Shadow
-    private float lastYaw;
-    @Shadow
-    private float lastPitch;
-
-    @Shadow
     @Override
     public abstract void tick();
 
@@ -57,7 +52,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
     @Unique
     private static final Logger LOGGER = Pullup.getLogger();
     @Unique
-    private static final Config CONFIG = Pullup.getConfig();
+    private static final cool.muyucloud.pullup.util.Config PULLUP_CONFIG = Pullup.getConfig();
     @Unique
     private static final PullupEngine ENGINE = new PullupEngine();
 
@@ -66,28 +61,46 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
     @Unique
     private boolean serverConditionRequestSent = false;
     @Unique
+    private boolean pullupOrientationInitialized = false;
+    @Unique
+    private float pullupPreviousYaw;
+    @Unique
+    private float pullupPreviousPitch;
+    @Unique
     private final FlightSessionClock flightSessionClock = new FlightSessionClock();
     @Unique
     private final PullupEngineState engineState = new PullupEngineState();
 
     public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        /*? if >=1.21.8 {*/
+        super(world, profile);
+        /*?} else {*/
+        /*? if =1.19.2 {*/
+        /*super(world, pos, yaw, profile, null);*/
+        /*?} else {*/
         super(world, pos, yaw, profile);
+        /*?}*/
+        /*?}*/
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void tick(CallbackInfo ci) {
         ConditionManagerScreen.openIfRequested();
+        this.initializeOrientationIfNeeded();
 
-        if (!this.flightSessionClock.update(this.isFallFlying())) {
+        if (!this.flightSessionClock.update(this.isPullupFallFlying())) {
+            this.captureOrientation();
             return;
         }
 
         if (!this.ensureConditionsReady()) {
+            this.captureOrientation();
             return;
         }
 
         PullupEngineResult result = ENGINE.tick(this.buildSnapshot(), Registry.CONDITIONS.getAll(), this.engineState);
         this.playSounds(result);
+        this.captureOrientation();
     }
 
     @Unique
@@ -97,7 +110,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
         }
 
         /*? if fabric {*/
-        boolean loadServer = CONFIG.getAsBool("loadServer");
+        boolean loadServer = PULLUP_CONFIG.getAsBool("loadServer");
         /*?} else {*/
         /*boolean loadServer = false;*/
         /*?}*/
@@ -128,7 +141,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
         double horizontalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
         double speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
         return new FlightSnapshot(
-            this.isFallFlying(),
+            this.isPullupFallFlying(),
             this.getY(),
             this.getRelativeHeight(),
             speed,
@@ -155,7 +168,19 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
             if (identifier == null) {
                 continue;
             }
+            /*? if >=1.21.5 {*/
             this.client.world.playSound(
+                this,
+                this.getX(),
+                this.getY(),
+                this.getZ(),
+                createSoundEvent(identifier),
+                SoundCategory.VOICE,
+                1.0F,
+                1.0F
+            );
+            /*?} else {*/
+            /*this.client.world.playSound(
                 this.getX(),
                 this.getY(),
                 this.getZ(),
@@ -164,7 +189,8 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
                 1.0F,
                 1.0F,
                 false
-            );
+            );*/
+            /*?}*/
         }
     }
 
@@ -174,47 +200,82 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Cl
     }
 
     @Unique
+    private void initializeOrientationIfNeeded() {
+        if (this.pullupOrientationInitialized) {
+            return;
+        }
+
+        this.pullupOrientationInitialized = true;
+        this.pullupPreviousYaw = this.getYaw();
+        this.pullupPreviousPitch = this.getPitch();
+    }
+
+    @Unique
+    private void captureOrientation() {
+        this.pullupPreviousYaw = this.getYaw();
+        this.pullupPreviousPitch = this.getPitch();
+    }
+
+    @Unique
     @Override
     public double getDistanceHorizontal() {
-        int maxDistance = CONFIG.getAsInt("maxDistance");
+        int maxDistance = PULLUP_CONFIG.getAsInt("maxDistance");
         Vec3d cameraPos = this.getCameraPosVec(0);
         Vec3d rotate = this.getRotationVector(0, this.getYaw());
         Vec3d endPos = cameraPos.add(rotate.x * maxDistance, rotate.y * maxDistance, rotate.z * maxDistance);
-        Vec3d target = this.getWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
+        Vec3d target = this.getActiveWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
         return cameraPos.distanceTo(target);
     }
 
     @Unique
     @Override
     public double getPitchedDistanceAhead(float pitch) {
-        int maxDistance = CONFIG.getAsInt("maxDistance");
+        int maxDistance = PULLUP_CONFIG.getAsInt("maxDistance");
         Vec3d cameraPos = this.getCameraPosVec(0);
         Vec3d rotate = this.getRotationVector(this.getPitch() + pitch, this.getYaw());
         Vec3d endPos = cameraPos.add(rotate.x * maxDistance, rotate.y * maxDistance, rotate.z * maxDistance);
-        Vec3d target = this.getWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
+        Vec3d target = this.getActiveWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
         return cameraPos.distanceTo(target);
     }
 
     @Unique
     @Override
     public double getRelativeHeight() {
-        int maxDistance = CONFIG.getAsInt("maxDistance");
+        int maxDistance = PULLUP_CONFIG.getAsInt("maxDistance");
         Vec3d cameraPos = this.getCameraPosVec(0);
         Vec3d endPos = cameraPos.add(0, -maxDistance, 0);
-        Vec3d target = this.getWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
+        Vec3d target = this.getActiveWorld().raycast(new RaycastContext(cameraPos, endPos, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, this)).getPos();
         return cameraPos.distanceTo(target);
+    }
+
+    @Unique
+    private boolean isPullupFallFlying() {
+        /*? if >=1.21.3 {*/
+        return this.isGliding();
+        /*?} else {*/
+        /*return this.isFallFlying();*/
+        /*?}*/
+    }
+
+    @Unique
+    private World getActiveWorld() {
+        /*? if >=1.21.11 {*/
+        return this.client.world;
+        /*?} else {*/
+        /*return this.getWorld();*/
+        /*?}*/
     }
 
     @Unique
     @Override
     public double getDeltaYaw() {
-        return this.getYaw() - this.lastYaw;
+        return this.getYaw() - this.pullupPreviousYaw;
     }
 
     @Unique
     @Override
     public double getDeltaPitch() {
-        return this.getPitch() - this.lastPitch;
+        return this.getPitch() - this.pullupPreviousPitch;
     }
 
     @Unique

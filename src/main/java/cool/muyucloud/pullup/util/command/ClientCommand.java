@@ -497,7 +497,11 @@ public class ClientCommand {
     private static MutableText buildClickableUrl(String url) {
         return coloredLiteral(url, Formatting.AQUA)
             .formatted(Formatting.UNDERLINE)
+            /*? if >=1.21.5 {*/
+            .styled(style -> style.withClickEvent(new ClickEvent.OpenUrl(java.net.URI.create(url))));
+            /*?} else {*/
             .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
+            /*?}*/
     }
 
     private static MutableText styledTranslatable(String key, Formatting color, Object... args) {
@@ -528,7 +532,7 @@ public class ClientCommand {
         /*? if fabric {*/
         source.sendFeedback(text);
         /*?} else {*/
-        /*? if <=1.18.2 {*/
+        /*? if <=1.19.4 {*/
         /*source.sendFeedback(text, false);*/
         /*?} else {*/
         /*source.sendFeedback(() -> text, false);*/

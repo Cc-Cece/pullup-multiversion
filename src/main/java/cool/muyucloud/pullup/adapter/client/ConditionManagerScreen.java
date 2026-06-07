@@ -22,15 +22,17 @@ import net.minecraft.network.chat.Component;
 */
 /*?} else {*/
 import net.minecraft.client.MinecraftClient;
-/*? if <=1.18.2 {*/
+/*? if fabric && <=1.19.4 || forge && <=1.19.4 {*/
 /*import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 */
 /*?} else {*/
+/*? if fabric && >=1.20.1 || forge && >=1.20.1 || neoforge {*/
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+/*?}*/
 /*?}*/
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
@@ -264,12 +266,19 @@ extends Screen
         guiGraphics.text(this.font, Component.translatable("gui.pullup.enabled_sets_count", this.enabledSets.size()), 20, this.height - 106, 0xB0B0B0, false);
     }*/
     /*?} else {*/
-    /*? if <=1.18.2 {*/
+/*? if fabric && <=1.19.4 || forge && <=1.19.4 {*/
     /*@Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         fillGradient(matrices, 0, 0, this.width, this.height, BACKGROUND_OVERLAY_COLOR, BACKGROUND_OVERLAY_COLOR);
         super.render(matrices, mouseX, mouseY, delta);
-        drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        drawTextWithShadow(
+            matrices,
+            this.textRenderer,
+            this.title,
+            (this.width - this.textRenderer.getWidth(this.title)) / 2,
+            16,
+            0xFFFFFF
+        );
         drawTextWithShadow(matrices, this.textRenderer, translatable("gui.pullup.enabled_sets_count", this.enabledSets.size()), 20, this.height - 106, 0xB0B0B0);
     }*/
     /*?} else {*/
@@ -411,7 +420,11 @@ extends Screen
                     sendPlayerMessage(translatable("command.pullup.client.cloud.edit.ready"));
 
                     MutableText clickable = literal(response.editUrl).formatted(Formatting.AQUA, Formatting.UNDERLINE)
+                        /*? if >=1.21.5 {*/
+                        .styled(style -> style.withClickEvent(new ClickEvent.OpenUrl(URI.create(response.editUrl))));
+                        /*?} else {*/
                         .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, response.editUrl)));
+                        /*?}*/
                     sendPlayerMessage(clickable);
 
                     if (response.expiresAt != null && !response.expiresAt.isBlank()) {
@@ -535,7 +548,7 @@ extends Screen
         /*? if >=26.1 {*/
         /*this.addRenderableWidget(Button.builder(label, button -> onPress.run()).bounds(x, y, width, height).build());*/
         /*?} else {*/
-        /*? if <=1.18.2 {*/
+        /*? if fabric && <=1.19.2 || forge && <=1.19.2 {*/
         /*this.addDrawableChild(new ButtonWidget(x, y, width, height, label, button -> onPress.run()));*/
         /*?} else {*/
         this.addDrawableChild(ButtonWidget.builder(label, button -> onPress.run()).dimensions(x, y, width, height).build());

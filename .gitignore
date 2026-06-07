@@ -22,6 +22,7 @@ gradle-app.setting
 **/node_modules
 **/.docusaurus
 
+
 # idea
 .idea/
 *.iml
@@ -45,6 +46,8 @@ replay_*.log
 *.jfr
 
 # other
-.docs
-.scripts
-versions
+.scripts/
+.docs/
+versions/
+scripts/
+

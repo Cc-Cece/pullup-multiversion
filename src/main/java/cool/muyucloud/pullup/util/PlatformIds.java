@@ -13,7 +13,11 @@ public final class PlatformIds {
         /*? if >=26.1 {*/
         /*return Identifier.fromNamespaceAndPath(namespace, path);*/
         /*?} else {*/
+        /*? if >=1.21 {*/
+        return Identifier.of(namespace, path);
+        /*?} else {*/
         return new Identifier(namespace, path);
+        /*?}*/
         /*?}*/
     }
 
@@ -21,7 +25,11 @@ public final class PlatformIds {
         /*? if >=26.1 {*/
         /*return Identifier.parse(value);*/
         /*?} else {*/
+        /*? if >=1.21 {*/
+        return Identifier.of(value);
+        /*?} else {*/
         return new Identifier(value);
+        /*?}*/
         /*?}*/
     }
 
